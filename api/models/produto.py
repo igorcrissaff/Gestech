@@ -17,3 +17,10 @@ class Produto(db.Model):
         self.nome = data["nome"]
         self.valor = data["valor"]
         self.unidade = data['unidade']
+
+    def get_dict(self, id):
+        produto = self.query.filter_by(id=id).first()
+        if produto:
+            produto = produto.__dict__
+            produto.pop('_sa_instance_state')
+            return produto

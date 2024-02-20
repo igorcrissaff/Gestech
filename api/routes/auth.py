@@ -6,10 +6,9 @@ from ..models.user import User
 
 auth = Blueprint('auth', __name__)
 
-@auth.route('/login')
-def login():
+@auth.route('/login/<pin>')
+def login(pin):
     try:
-        pin = request.json['pin']
         user = User.query.filter_by(id=pin).first()
         if not user:
             return 'Usuario inexistente', 400

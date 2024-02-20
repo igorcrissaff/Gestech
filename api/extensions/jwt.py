@@ -1,4 +1,7 @@
-from flask_jwt_extended import JWTManager
+from functools import wraps
+
+from flask import abort
+from flask_jwt_extended import JWTManager, get_current_user
 from ..models.user import User
 
 jwt_manager = JWTManager()
@@ -13,4 +16,15 @@ def user_lookup_callback(_jwt_header, jwt_data):
     return User.query.filter_by(id=identity).one_or_none()
 
 def admin_required():
-    pass
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            user = get_current_user()
+            if user.cargo == 'admin':
+                return fn(*args, **kwargs)
+            else:
+                return abort(403, 'Admin Required')
+
+        return decorator
+
+    return wrapper
