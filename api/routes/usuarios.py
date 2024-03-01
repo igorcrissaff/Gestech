@@ -3,6 +3,7 @@ from flask import Blueprint, request, abort, jsonify
 import flask_jwt_extended as jwt
 
 from ..extensions.jwt import admin_required
+from ..extensions.cache import cache
 
 from ..models import db
 from ..models.user import User
@@ -10,12 +11,12 @@ from ..models.user import User
 usuarios = Blueprint('usuarios', __name__)
 ##########################################################################
 
-#Create
+# Create
 @usuarios.route('/add', methods=["POST"])
 @jwt.jwt_required()
 @admin_required()
 def add():
-    db.session.add(User(request.json))
+    db.session.add(User(**request.json))
     db.session.commit()
     return ''
 ##########################################################################
@@ -24,6 +25,7 @@ def add():
 @usuarios.route('/get_all', methods=['GET'])
 @jwt.jwt_required()
 @admin_required()
+@cache.cached()
 def get_all():
     data = User.query.all()
     users = []

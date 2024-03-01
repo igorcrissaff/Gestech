@@ -18,7 +18,7 @@ vendas = Blueprint('venda', __name__)
 def add():
     produto = Produto.query.filter_by(id=request.json['id_produto']).first()
     if produto:
-        db.session.add(Venda(request.json))
+        db.session.add(Venda(**request.json))
         produto.estoque -= request.json['quantidade']
         db.session.commit()    
         return 'OK'

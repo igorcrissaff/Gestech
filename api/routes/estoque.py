@@ -3,6 +3,7 @@ from flask import Blueprint, request, abort
 import flask_jwt_extended as jwt
 
 from ..extensions.jwt import admin_required
+from ..extensions.cache import cache
 
 from ..models import db
 from ..models.produto import Produto
@@ -15,7 +16,7 @@ estoque = Blueprint('estoque', __name__)
 @jwt.jwt_required()
 @admin_required()
 def add():
-    db.session.add(Produto(request.json))
+    db.session.add(Produto(**request.json))
     db.session.commit()
     return ''
 ##########################################################################
@@ -24,11 +25,20 @@ def add():
 @estoque.route('/get_all', methods=['GET'])
 @jwt.jwt_required()
 @admin_required()
+@cache.cached()
 def get_all():
-    ids = db.session.query(Produto.id).all()
+    json = request.get_json(silent=True)
+    filtros = []
+    if json:
+        filtros = [getattr(Produto, attr) == value for attr, value in json.items()]
+
+    data = Produto.query.filter(*filtros).all()
     produtos = []
-    for codigo in ids:
-        produtos.append(get(codigo[0]))
+    if data:
+        for produto in data:
+            produto = produto.__dict__
+            produto.pop('_sa_instance_state')
+            produtos.append(produto)
     return produtos
 
 @estoque.route('/get/<codigo>', methods=['GET'])
@@ -85,7 +95,7 @@ def edit(codigo):
         for key, value in request.json.items():
             setattr(produto, key, value)
         db.session.commit()
-        return ''
+        return '', 204
     else:
         return abort(400, 'Product Not Found')
 ##########################################################################
@@ -99,7 +109,7 @@ def delete(codigo):
     if produto:
         produto.delete()
         db.session.commit()
-        return ''
+        return '', 204
     else:
         return abort(400, 'Product Not Found')
 ##########################################################################

@@ -1,5 +1,5 @@
 from . import db
-from datetime import datetime
+from datetime import date
 
 class Compra(db.Model):
     __tablename__ = 'compras'
@@ -8,10 +8,10 @@ class Compra(db.Model):
     id_produto = db.Column(db.String(13), db.ForeignKey('produtos.id'), nullable=False)
     quantidade = db.Column(db.Integer(), nullable=False)
     valor = db.Column(db.Float(), nullable=False)
-    data = db.Column(db.DateTime(), nullable=False)
+    data = db.Column(db.Date(), nullable=False, default=date.today())
     
-    def __init__(self, data):
-        self.id_produto = data['id_produto']
-        self.quantidade = data['quantidade']
-        self.valor = data['valor']
-        self.data = datetime.now()
+    def __init__(self, id_produto, quantidade, valor, data=date.today()):
+        self.id_produto = id_produto
+        self.quantidade = quantidade
+        self.valor = valor
+        self.data = data

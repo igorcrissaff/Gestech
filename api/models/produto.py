@@ -12,11 +12,11 @@ class Produto(db.Model):
     vendas = db.relationship('Venda', backref='produto')
     compras = db.relationship('Compra', backref='produto')
 
-    def __init__(self, data):
-        self.id = data["id"]
-        self.nome = data["nome"]
-        self.valor = data["valor"]
-        self.unidade = data['unidade']
+    def __init__(self, id, nome, valor, unidade):
+        self.id = id
+        self.nome = nome
+        self.valor = valor
+        self.unidade = unidade
 
     def get_dict(self, id):
         produto = self.query.filter_by(id=id).first()

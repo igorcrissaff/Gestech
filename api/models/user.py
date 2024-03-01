@@ -9,10 +9,10 @@ class User(db.Model):
 
     vendas = db.relationship('Venda', backref='vendedor')
 
-    def __init__(self, data):
-        self.id = '0'*(4-len(data['id'])) + data['id']
-        self.nome = data['nome']
-        self.cargo = data['cargo']
+    def __init__(self, id, nome, cargo):
+        self.id = id
+        self.nome = nome
+        self.cargo = cargo
     
     def get(self, id):
         user = self.query.filter_by(id=id).first()
