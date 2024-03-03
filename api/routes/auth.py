@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint
 import flask_jwt_extended as jwt
 from datetime import timedelta
 
