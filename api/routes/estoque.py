@@ -16,9 +16,12 @@ estoque = Blueprint('estoque', __name__)
 @jwt.jwt_required()
 @admin_required()
 def add():
-    db.session.add(Produto(**request.json))
-    db.session.commit()
-    return ''
+    try:
+        db.session.add(Produto(**request.json))
+        db.session.commit()
+        return ''
+    except Exception as error:
+        return abort(400, repr(error))
 ##########################################################################
 
 #Read
@@ -35,10 +38,7 @@ def get_all():
     data = Produto.query.filter(*filtros).all()
     produtos = []
     if data:
-        for produto in data:
-            produto = produto.__dict__
-            produto.pop('_sa_instance_state')
-            produtos.append(produto)
+        produtos = [produto.dict() for produto in data]
     return produtos
 
 @estoque.route('/get/<codigo>', methods=['GET'])
@@ -46,9 +46,7 @@ def get_all():
 def get(codigo):  
     produto = Produto.query.filter_by(id=codigo).first()
     if produto:
-        produto = produto.__dict__
-        produto.pop('_sa_instance_state')
-        return produto
+        return produto.dict()
     else:
         return abort(400, 'Product Not Found')
     
@@ -60,11 +58,8 @@ def get_vendas(codigo):
     if produto:
         data = produto.vendas
         vendas = []
-        for venda in data:
-            venda = venda.__dict__
-            venda.pop('_sa_instance_state')
-            vendas.append(venda)
-            vendas.clear()
+        if data:
+            vendas = [venda.dict() for venda in data]
         return vendas
     else:
         return abort(400, 'Product Not Found')
@@ -77,10 +72,8 @@ def get_compras(codigo):
     if produto:
         data = produto.vendas
         compras = []
-        for compra in data:
-            compra = compra.__dict__
-            compra.pop('_sa_instance_state')
-            compras.append(compra)
+        if data:
+            compras = [compra.dict() for compra in data]
         return compras
     else:
         return abort(400, 'Product Not Found')
@@ -92,10 +85,14 @@ def get_compras(codigo):
 def edit(codigo):
     produto = Produto.query.filter_by(id=codigo).first()
     if produto:
-        for key, value in request.json.items():
-            setattr(produto, key, value)
-        db.session.commit()
-        return '', 204
+        try:
+            for key, value in request.json.items():
+                if hasattr(produto, key):
+                    setattr(produto, key, value)
+            db.session.commit()
+            return '', 204
+        except Exception as error:
+            return abort(400, repr(error))
     else:
         return abort(400, 'Product Not Found')
 ##########################################################################

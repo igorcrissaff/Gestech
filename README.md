@@ -13,9 +13,25 @@
         <li>valor</li>
         <li>medida</li>
         <li>estoque</li>
+        <hr>
+        <li>vendas</li>
+        <li>compras</li>
     </ul>
+
     <li>User</li>
+    <ul>
+        <li>pin</li>
+        <li>nome</li>
+        <li>cargo</li>
+        <li>telefone</li> <strong>Pendente</strong>
+        <hr>
+        <li>vendas</li>
+    </ul>
+    
     <li>Venda</li>
+    <ul>
+
+    </ul>
     <li>Compra</li>
 </ul>
  

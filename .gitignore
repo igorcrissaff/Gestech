@@ -403,3 +403,4 @@ instance
 tests
 *cache
 .vscode
+.timetracker

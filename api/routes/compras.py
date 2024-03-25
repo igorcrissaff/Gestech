@@ -44,23 +44,18 @@ def get_all():
             filtros.append(item)
     
     data = Compra.query.filter(*filtros).all() 
-    print(data)
     if data:
         compras = []
         for item in data:
             compra = item.__dict__
 
-            compra['produto'] = {
-                "id": item.produto.id, 
-                "nome": item.produto.nome, 
-                "valor": item.produto.valor
-                }
+            compra['produto'] = item.produto.dict()
 
             compra.pop('id_produto')
             compra.pop('_sa_instance_state')
 
             compras.append(compra)
-        print(compras)
+        
         return compras
     else:
         return ''
@@ -73,11 +68,7 @@ def get(codigo):
     if data:
         compra = data.__dict__
 
-        compra['produto'] = {
-            "id": data.produto.id, 
-            "nome": data.produto.nome, 
-            "valor": data.produto.valor
-            }
+        compra['produto'] = data.produto.dict()
 
         compra.pop('id_produto')
         compra.pop('_sa_instance_state')

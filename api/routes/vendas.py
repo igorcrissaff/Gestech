@@ -6,7 +6,7 @@ import flask_jwt_extended as jwt
 from ..extensions.jwt import admin_required
 
 from ..models import db
-from ..models.venda import Venda
+from ..models.sale import Venda
 from ..models.produto import Produto
 
 vendas = Blueprint('venda', __name__)

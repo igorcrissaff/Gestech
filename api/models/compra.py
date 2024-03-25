@@ -15,3 +15,10 @@ class Compra(db.Model):
         self.quantidade = quantidade
         self.valor = valor
         self.data = data
+
+    def dict(self):
+        compra = self.__dict__
+        compra.pop('_sa_instance_state')
+        return compra
+    
+

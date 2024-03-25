@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, abort
 import flask_jwt_extended as jwt
 from datetime import timedelta
 
@@ -21,5 +21,5 @@ def login(pin):
             return token
         
     except Exception as erro:
-        return str(erro), 400
-    
+        return abort(400, repr(erro))
+
