@@ -13,11 +13,11 @@ usuarios = Blueprint('usuarios', __name__)
 
 # Create
 @usuarios.route('/add', methods=["POST"])
-@jwt.jwt_required()
-@admin_required()
+#@admin_required()
 def add():
     try:
-        db.session.add(User(**request.json))
+        user = User(**request.json)
+        db.session.add(user)
         db.session.commit()
         return '', 204
     except Exception as erro:
@@ -27,34 +27,34 @@ def add():
 # Read
 @usuarios.route('/get_all', methods=['GET'])
 @admin_required()
-@cache.cached()
+#@cache.cached()
 def get_all():
     data = User.query.all()
     if data:
-        users = [x.dict() for x in data]
+        users = [x.dict for x in data]
         return jsonify(users)
     else:
-        return 'No Products'
+        return 'No Users Found'
     
 @usuarios.route('/get/<codigo>', methods=['GET'])
 @admin_required()
 def get(codigo):
-    user = User.query.filter_by(id=codigo).first()
+    user = User.query.get(codigo)
     if user:
-        return jsonify(user.dict())
+        return user.dict
     else:
         return abort(400, 'Product Not Found')
     
 @usuarios.route('/get/vendas/<codigo>')
 @admin_required()
-@cache.cached()
+#@cache.cached()
 def get_vendas(codigo):
-    usuario = User.query.filter_by(id=codigo).first()
+    usuario = User.query.get(codigo)
     if usuario:
-        data = usuario.vendas
+        data = usuario.sales
         vendas = []
         for venda in data:
-            vendas.append(venda.dict())
+            vendas.append(venda.dict)
         return jsonify(vendas)
 ##########################################################################
     
@@ -62,12 +62,13 @@ def get_vendas(codigo):
 @usuarios.route('/edit/<codigo>', methods=['PUT'])
 @admin_required()
 def edit(codigo):
-    user = User.query.filter_by(id=codigo).first()
+    user = User.query.get(codigo)
     if user:
         for key, value in request.json.items():
-            setattr(user, key, value)
+            if hasattr(user, key):
+                setattr(user, key, value)
         db.session.commit()
-        return ''
+        return '', 204
     else:
         return abort(400, 'User Not Found')
 ##########################################################################
@@ -76,7 +77,7 @@ def edit(codigo):
 @usuarios.route('/delete/<codigo>', methods=['DELETE'])
 @admin_required()
 def delete(codigo):
-    user = User.query.filter_by(id=codigo).first()
+    user = User.query.get(codigo)
     if user:
         user.delete()
         db.session.commit()

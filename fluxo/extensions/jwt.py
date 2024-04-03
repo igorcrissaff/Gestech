@@ -21,7 +21,8 @@ def admin_required():
         @jwt_required()
         def decorator(*args, **kwargs):
             user = get_current_user()
-            if user.id in current_app.config['ADMINS']:
+            admins = current_app.config['ADMINS']
+            if user.id in admins:
                 return fn(*args, **kwargs)
             else:
                 return abort(403, 'Admin Required')

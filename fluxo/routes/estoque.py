@@ -1,12 +1,12 @@
 #Setup
-from flask import Blueprint, request, abort
+from flask import Blueprint, request, abort, jsonify
 import flask_jwt_extended as jwt
 
 from ..extensions.jwt import admin_required
-from ..extensions.cache import cache
+#from ..extensions.cache import cache
 
 from ..models import db
-from ..models.produto import Produto
+from ..models.product import Product
 
 estoque = Blueprint('estoque', __name__)
 ##########################################################################
@@ -14,10 +14,10 @@ estoque = Blueprint('estoque', __name__)
 #Create
 @estoque.route('/add', methods=["POST"])
 @jwt.jwt_required()
-@admin_required()
+#@admin_required()
 def add():
     try:
-        db.session.add(Produto(**request.json))
+        db.session.add(Product(**request.json))
         db.session.commit()
         return ''
     except Exception as error:
@@ -26,54 +26,45 @@ def add():
 
 #Read
 @estoque.route('/get_all', methods=['GET'])
-@jwt.jwt_required()
 @admin_required()
-@cache.cached()
+#@cache.cached()
 def get_all():
     json = request.get_json(silent=True)
     filtros = []
     if json:
-        filtros = [getattr(Produto, attr) == value for attr, value in json.items()]
+        filtros = [getattr(Product, attr) == value for attr, value in json.items()]
 
-    data = Produto.query.filter(*filtros).all()
+    data = Product.query.filter(*filtros).all()
     produtos = []
     if data:
-        produtos = [produto.dict() for produto in data]
+        produtos = [produto.dict for produto in data]
     return produtos
 
 @estoque.route('/get/<codigo>', methods=['GET'])
 @jwt.jwt_required()
 def get(codigo):  
-    produto = Produto.query.filter_by(id=codigo).first()
+    produto = Product.query.get(codigo)
     if produto:
-        return produto.dict()
+        return produto.dict
     else:
         return abort(400, 'Product Not Found')
     
 @estoque.route('/get/vendas/<codigo>')
-@jwt.jwt_required()
 @admin_required()
 def get_vendas(codigo):
-    produto = Produto.query.filter_by(id=codigo).first()
+    produto = Product.query.get(codigo)
     if produto:
-        data = produto.vendas
-        vendas = []
-        if data:
-            vendas = [venda.dict() for venda in data]
+        vendas = [venda.dict for venda in produto.sales]
         return vendas
     else:
         return abort(400, 'Product Not Found')
 
 @estoque.route('/get/compras/<codigo>')
-@jwt.jwt_required()
 @admin_required()
 def get_compras(codigo):
-    produto = Produto.query.filter_by(id=codigo).first()
+    produto = Product.query.get(codigo)
     if produto:
-        data = produto.vendas
-        compras = []
-        if data:
-            compras = [compra.dict() for compra in data]
+        compras = [compra.dict for compra in produto.purchases]
         return compras
     else:
         return abort(400, 'Product Not Found')
@@ -81,9 +72,9 @@ def get_compras(codigo):
     
 #Update
 @estoque.route('/edit/<codigo>', methods=['PUT'])
-@jwt.jwt_required()
+@admin_required()
 def edit(codigo):
-    produto = Produto.query.filter_by(id=codigo).first()
+    produto = Product.query.filter_by(id=codigo).first()
     if produto:
         try:
             for key, value in request.json.items():
@@ -99,10 +90,9 @@ def edit(codigo):
     
 #Delete
 @estoque.route('/delete/<codigo>', methods=['DELETE'])
-@jwt.jwt_required()
 @admin_required()
 def delete(codigo):
-    produto = Produto.query.filter_by(id=codigo).first()
+    produto = Product.query.filter_by(id=codigo).first()
     if produto:
         produto.delete()
         db.session.commit()
