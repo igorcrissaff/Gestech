@@ -11,62 +11,46 @@ from ..models.user import User
 usuarios = Blueprint('usuarios', __name__)
 ##########################################################################
 
+# Read
+@usuarios.route('', methods=['GET'])
+@admin_required()
+def get():
+    args = request.args
+    filters = []
+    for attr, value in args.items():
+        if hasattr(User, attr) and attr in ['id', 'name', 'email', 'phone']:
+            filters.append(getattr(User, attr) == value)
+
+    users = User.query.filter(*filters).all()
+    if users:
+        users = [user.dict for user in users]
+        return users
+    else:
+        return 'None'
+
 # Create
-@usuarios.route('/add', methods=["POST"])
-#@admin_required()
+@usuarios.route('', methods=["POST"])
+@admin_required()
 def add():
     try:
         user = User(**request.json)
         db.session.add(user)
         db.session.commit()
-        return '', 204
+        return '',201
     except Exception as erro:
         return abort(400, repr(erro))
 ##########################################################################
-
-# Read
-@usuarios.route('/get_all', methods=['GET'])
-@admin_required()
-#@cache.cached()
-def get_all():
-    data = User.query.all()
-    if data:
-        users = [x.dict for x in data]
-        return jsonify(users)
-    else:
-        return 'No Users Found'
-    
-@usuarios.route('/get/<codigo>', methods=['GET'])
-@admin_required()
-def get(codigo):
-    user = User.query.get(codigo)
-    if user:
-        return user.dict
-    else:
-        return abort(400, 'Product Not Found')
-    
-@usuarios.route('/get/vendas/<codigo>')
-@admin_required()
-#@cache.cached()
-def get_vendas(codigo):
-    usuario = User.query.get(codigo)
-    if usuario:
-        data = usuario.sales
-        vendas = []
-        for venda in data:
-            vendas.append(venda.dict)
-        return jsonify(vendas)
-##########################################################################
     
 # Update
-@usuarios.route('/edit/<codigo>', methods=['PUT'])
+@usuarios.route('', methods=['PATCH'])
 @admin_required()
-def edit(codigo):
-    user = User.query.get(codigo)
+def edit():
+    user_id = request.args.get('id')
+    user = User.query.get(user_id)
     if user:
-        for key, value in request.json.items():
-            if hasattr(user, key):
-                setattr(user, key, value)
+        for attr, value in request.json.items():
+            if hasattr(user, attr) and attr != 'id':
+                setattr(user, attr, value)
         db.session.commit()
         return '', 204
     else:
@@ -74,14 +58,15 @@ def edit(codigo):
 ##########################################################################
     
 # Delete
-@usuarios.route('/delete/<codigo>', methods=['DELETE'])
+@usuarios.route('', methods=['DELETE'])
 @admin_required()
-def delete(codigo):
-    user = User.query.get(codigo)
+def remove():
+    user_id = request.args.get('id')
+    user = User.query.get(user_id)
     if user:
-        user.delete()
+        db.session.delete(user)
         db.session.commit()
-        return '', 204
+        return '', 200
     else:
         return abort(400, "User Not Found")
 ##########################################################################

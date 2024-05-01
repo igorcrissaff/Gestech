@@ -1,5 +1,5 @@
 #Setup
-from flask import Blueprint, request, abort, jsonify
+from flask import Blueprint, request, abort
 import flask_jwt_extended as jwt
 
 from ..extensions.jwt import admin_required
@@ -29,12 +29,7 @@ def add():
 @admin_required()
 #@cache.cached()
 def get_all():
-    json = request.get_json(silent=True)
-    filtros = []
-    if json:
-        filtros = [getattr(Product, attr) == value for attr, value in json.items()]
-
-    data = Product.query.filter(*filtros).all()
+    data = Product.query.all()
     produtos = []
     if data:
         produtos = [produto.dict for produto in data]
@@ -69,12 +64,12 @@ def get_compras(codigo):
     else:
         return abort(400, 'Product Not Found')
 ##########################################################################
-    
+
 #Update
 @estoque.route('/edit/<codigo>', methods=['PUT'])
 @admin_required()
 def edit(codigo):
-    produto = Product.query.filter_by(id=codigo).first()
+    produto = Product.query.get(codigo)
     if produto:
         try:
             for key, value in request.json.items():
@@ -92,7 +87,7 @@ def edit(codigo):
 @estoque.route('/delete/<codigo>', methods=['DELETE'])
 @admin_required()
 def delete(codigo):
-    produto = Product.query.filter_by(id=codigo).first()
+    produto = Product.query.get(codigo)
     if produto:
         produto.delete()
         db.session.commit()

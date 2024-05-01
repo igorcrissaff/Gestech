@@ -16,7 +16,7 @@ App = Flask(__name__, instance_relative_config=True)
 App.register_blueprint(auth, url_prefix='/auth')
 
 App.register_blueprint(estoque, url_prefix='/estoque')
-App.register_blueprint(usuarios, url_prefix='/usuarios')
+App.register_blueprint(usuarios, url_prefix='/users')
 App.register_blueprint(vendas, url_prefix='/vendas')
 App.register_blueprint(compras, url_prefix='/compras')
 
