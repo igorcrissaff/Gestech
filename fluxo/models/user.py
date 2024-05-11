@@ -16,7 +16,7 @@ class User(db.Model):
     _phone = db.Column(db.String(13))
     _birth_date = db.Column(db.Date())
 
-    sales = db.relationship('Sale', backref='seller')
+    #sales = db.relationship('Sale', backref='seller')
 
     def __init__(self, id, name, email, password, phone, birth_date):
         self.id = id
@@ -36,7 +36,7 @@ class User(db.Model):
             'name': self.name,
             'email': self.email,
             'phone': self.phone,
-            'birth_date': self.birth_date,
+            'birth_date': self.birth_date.strftime("%Y-%m-%d")
         }
     
     # email

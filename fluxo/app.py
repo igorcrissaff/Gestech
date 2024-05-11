@@ -1,24 +1,22 @@
 from flask import Flask
+from flask_restful import Api as api
 
-from .models import *
+from .models import db
 
-from .routes.auth import auth
-from .routes.estoque import estoque
-from .routes.usuarios import usuarios
-from .routes.vendas import vendas
-from .routes.compras import compras
+from .resources import auth, human_resources, sales, stock
 
 #from .extensions.cache import cache
 from .extensions.jwt import jwt_manager
 
 App = Flask(__name__, instance_relative_config=True)
+Api = api(App)
 
-App.register_blueprint(auth, url_prefix='/auth')
 
-App.register_blueprint(estoque, url_prefix='/estoque')
-App.register_blueprint(usuarios, url_prefix='/users')
-App.register_blueprint(vendas, url_prefix='/vendas')
-App.register_blueprint(compras, url_prefix='/compras')
+Api.add_resource(auth.Auth, '/auth')
+Api.add_resource(human_resources.HR, '/users')
+Api.add_resource(stock.Stock, '/stock')
+Api.add_resource(sales.Sales, '/sales')
+
 
 App.config.from_pyfile('BaseConfig.py')
 App.config.from_pyfile('DevelopmentConfig.py')

@@ -24,22 +24,21 @@ class Sale(db.Model):
         self.seller_id = seller_id
         
         self.quantity = quantity
-        self.price = self.product.price * quantity
+        self.value = self.product.price * quantity
 
         self.date = date
 
     def __repr__(self) -> str:
         return f"<Sale() id={self.id}, seller{repr(self.seller)}, product={repr(self.product)}, quantity={self.quantity}, price={self.price}, date={self.date}>"
 
-    @hybrid_property
     def dict(self):
         return {
             "id": self.id,
             "seller": self.seller.dict,
             "product": self.product.dict,
             "quantity": self.quantity,
-            "price": self.price,
-            "date": self.date
+            "price": self.value,
+            "date": self.date.strftime("%Y-%m-%d")
         }
     
     @hybrid_property

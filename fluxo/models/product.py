@@ -13,8 +13,8 @@ class Product(db.Model):
     #_created_at = db.Column(db.DateTime(), default=datetime.now())
     #_updated_at = db.Column(db.DateTime())
 
-    sales = db.relationship('Sale', backref='product')
-    purchases = db.relationship('Purchase', backref='product')
+    #sales = db.relationship('Sale', backref='product')
+    #purchases = db.relationship('Purchase', backref='product')
 
     def __init__(self, id, name, price):
         self.id = id

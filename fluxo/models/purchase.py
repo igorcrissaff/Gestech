@@ -25,7 +25,7 @@ class Purchase(db.Model):
             "product": self.product.dict,
             "quantity": self.quantity,
             "price": self.price,
-            "date": self.date
+            "date": self.date.strftime('%Y-%m-%d')
         }
     
     @hybrid_property
