@@ -31,4 +31,6 @@ def create_all():
     db.create_all()
     return 'ok'
 
+if __name__ == '__main__':
+    App.run()
     

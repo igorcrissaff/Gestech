@@ -1,3 +1,4 @@
 from fluxo.app import App
 
-App.run(debug=True)
+if __name__ == '__main__':
+    App.run(debug=True)
