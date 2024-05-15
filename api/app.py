@@ -26,11 +26,6 @@ jwt_manager.init_app(App)
 db.init_app(App)
 
 
-@App.route('/create_all')
-def create_all():
-    db.create_all()
-    return 'ok'
-
 if __name__ == '__main__':
     App.run()
     
