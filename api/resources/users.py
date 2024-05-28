@@ -10,7 +10,7 @@ from ..models import db
 from ..models.user import User
 
 
-class HR(Resource):
+class Users(Resource):
 
     @jwt_required()
     def get(self):

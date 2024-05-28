@@ -10,11 +10,12 @@ from ..models import db
 from ..models.product import Product
 
 
-class Stock(Resource):
+class Products(Resource):
 
     @jwt_required()
     def get(self):
         args = request.args
+        print(repr(args))
         filters = []
         for attr, value in args.items():
             if hasattr(Product, attr):
@@ -29,13 +30,17 @@ class Stock(Resource):
 
     @admin_required()
     def post(self):
+        if not request.json:
+            return abort(400, 'Missing Request Body')
+        
         try:
             product = Product(**request.json)
             db.session.add(product)
             db.session.commit()
-            return 'Product Posted'
         except IntegrityError:
-            return abort(400, message='Product Already Registered')
+            return abort(400, message='Product Already Registered')    
+            
+        return 'Product Added'
         
     @admin_required()
     def patch(self):

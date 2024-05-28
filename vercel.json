@@ -1,5 +1,22 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/app" }
-  ]
+  ],
+  "routes": [
+    {
+      "src": "/users",
+      "dest": "/api/resources/users.py"
+    },
+    {
+      "src": "/products",
+      "dest": "/api/resources/products.py"
+    },
+    {
+      "src": "/sales",
+      "dest": "/api/resources/sales.py"
+    },
+    {
+      "src": "/purchases",
+      "dest": "/api/resources/purchases.py"
+    }]
 }
