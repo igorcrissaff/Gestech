@@ -1,8 +1,9 @@
 from . import db
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date
+from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
+from dateutil.parser import parse
 import re
 
 
@@ -24,7 +25,10 @@ class User(db.Model):
         self._email = email
         self._password = generate_password_hash(password)
         self._phone = phone
-        self._birth_date = birth_date
+        
+        birth_date = ' '.join(birth_date.split()[:4])
+        self._birth_date = parse(birth_date)
+        #self.birth_date = birth_date
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, name={self.name}, email={self.email}, phone={self.phone}, birth_date={self.birth_date})>"
@@ -36,7 +40,7 @@ class User(db.Model):
             'name': self.name,
             'email': self.email,
             'phone': self.phone,
-            'birth_date': self.birth_date.strftime("%Y-%m-%d")
+            'birth_date': self.birth_date.strftime("%d-%m-%Y")
         }
     
     # email

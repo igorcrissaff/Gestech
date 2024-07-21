@@ -3,6 +3,7 @@ from flask_restful import Resource, request, abort
 from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import IntegrityError
 
+
 from ..extensions.jwt import admin_required
 from ..extensions.cache import cache
 
@@ -33,7 +34,7 @@ class Users(Resource):
             user = User(**request.json)
             db.session.add(user)
             db.session.commit()
-            return 'User Posted'
+            return "User Posted"
         except IntegrityError:
             return abort(400, message="User Id Already Registered")
         

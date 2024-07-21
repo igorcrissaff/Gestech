@@ -19,6 +19,9 @@ class Products(Resource):
         filters = []
         for attr, value in args.items():
             if hasattr(Product, attr):
+                if 'gt' in value:
+                    filters.append(getattr(Product, attr) > float(value.split(':')[1]))
+                
                 filters.append(getattr(Product, attr) == value)
 
         products = Product.query.filter(*filters).all()

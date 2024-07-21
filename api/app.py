@@ -2,14 +2,14 @@ from flask import Flask
 
 #from .extensions.cache import cache
 from .extensions.jwt import jwt_manager
-from .models import *
+from .models import db, user
 from .resources import api
 
 app = Flask(__name__, instance_relative_config=True)
 
 
 app.config.from_pyfile('BaseConfig.py')
-app.config.from_pyfile('ProductionConfig.py')
+app.config.from_pyfile('DevelopmentConfig.py')
 
 #cache.init_app(App)
 jwt_manager.init_app(app)
